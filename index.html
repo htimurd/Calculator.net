@@ -64,8 +64,6 @@
         .link-text span { color: var(--orange); font-weight: bold; text-decoration: underline; }
 
         .footer-text { position: absolute; bottom: 30px; right: 40px; color: #444; font-size: 20px; user-select: none; }
-        .dots::after { content: ''; animation: dots 1.5s infinite; }
-        @keyframes dots { 0% { content: '.'; } 33% { content: '..'; } 66% { content: '...'; } }
     </style>
 </head>
 <body>
@@ -109,212 +107,297 @@
         </div>
     </div>
 
-    <!-- Модалки -->
-    <div id="devModal" class="modal">
-        <div class="modal-content modal-console">
-            <span class="close-x" onclick="closeModals()">&times;</span>
-            <h2 style="text-align: left; color: var(--orange); margin: 0 0 10px 0;">Console</h2>
-            <div id="devConsole"></div>
-            <div class="cmd-line">
-                <span class="cmd-prefix">></span>
-                <input type="text" id="cmdInput" class="cmd-input" placeholder="Введите команду..." autocomplete="off">
-            </div>
-        </div>
-    </div>
-
-    <div id="buyModal" class="modal">
-        <div class="modal-content">
-            <span class="close-x" onclick="closeModals()">&times;</span>
-            <h2>Магазин</h2>
-            <button id="buy-standart" class="auth-btn" onclick="startPurchase('standart', 'pro')">STANDART (бесплатно)</button>
-            <button id="buy-pro" class="auth-btn" onclick="startPurchase('pro', 'super')" disabled>PRO (бесплатно)</button>
-            <button id="buy-super" class="auth-btn" onclick="startPurchase('super', 'mega')" disabled>SUPER (бесплатно)</button>
-            <button id="buy-mega" class="auth-btn" onclick="startPurchase('mega', null)" disabled>MEGA (бесплатно)</button>
-            <button style="margin-top:15px; color:var(--red); background:none; border:none; cursor:pointer;" onclick="location.reload()">Убрать тариф</button>
-        </div>
-    </div>
-
-    <div id="procModal" class="modal">
-        <div class="modal-content" id="procContent">
-            <h2 id="procTitle">Статус операции</h2>
-            <!-- Статус и надписи -->
-            <div id="procStatus" class="proc-status"></div>
-            <!-- Кнопка отмены СТРОГО ПОД статусом -->
-            <button id="cancelBtn" class="auth-btn btn-cancel-red" onclick="cancelPurchase()">ОТМЕНИТЬ</button>
-            
-            <div id="finalBtns" class="final-btns">
-                <button class="auth-btn" onclick="openModal('buyModal')">К тарифам</button>
-                <button class="auth-btn" style="background:#222; color:white;" onclick="closeModals()">Главная страница</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Вход / Регистрация -->
+    <!-- Модалка Входа -->
     <div id="loginModal" class="modal">
         <div class="modal-content">
-            <span class="close-x" onclick="closeModals()">&times;</span>
-            <h2>Вход</h2>
-            <input type="text" id="lName" class="auth-input" placeholder="Имя">
-            <input type="password" id="lPass" class="auth-input" placeholder="Пароль">
-            <button class="auth-btn" onclick="handleLogin()">Войти</button>
-            <div class="link-text" onclick="openModal('regModal')">Нет аккаунта? <span>Создать</span></div>
+            <span class="close-x" onclick="closeModal('loginModal')">&times;</span>
+            <h2 id="authTitle">Авторизация</h2>
+            <input type="email" id="emailInp" class="auth-input" placeholder="E-mail">
+            <input type="password" id="passInp" class="auth-input" placeholder="Пароль">
+            <button class="auth-btn" onclick="fakeLogin()">Продолжить</button>
+            <p class="link-text" onclick="toggleAuth()">Нет аккаунта? <span>Создать</span></p>
         </div>
     </div>
 
-    <div id="regModal" class="modal">
+    <!-- Модалка Покупки -->
+    <div id="buyModal" class="modal">
         <div class="modal-content">
-            <span class="close-x" onclick="closeModals()">&times;</span>
-            <h2>Регистрация</h2>
-            <input type="text" id="rName" class="auth-input" placeholder="Имя">
-            <input type="email" id="rE1" class="auth-input" placeholder="Email">
-            <input type="email" id="rE2" class="auth-input" placeholder="Повторите Email">
-            <input type="password" id="rP1" class="auth-input" placeholder="Пароль">
-            <input type="password" id="rP2" class="auth-input" placeholder="Повторите пароль">
-            <button class="auth-btn" onclick="handleRegister()">Зарегистрироваться</button>
+            <span class="close-x" onclick="closeModal('buyModal')">&times;</span>
+            <h2>Выбор тарифа</h2>
+            <div id="procZone" class="proc-status">Выберите план для разблокировки функций</div>
+            <div id="tierList">
+                <button class="auth-btn" onclick="startBuy('ULTIMATE MEGA PACK', 'mega')">ULTIMATE MEGA (Все кнопки) - $99</button>
+                <button class="auth-btn" style="background:#444; color:#fff" onclick="startBuy('PRO PACK', 'pro')">PRO (Сложение/Вычитание) - $29</button>
+            </div>
+            <div id="finalActions" class="final-btns">
+                <button class="auth-btn" onclick="location.reload()">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка Консоли -->
+    <div id="devModal" class="modal">
+        <div class="modal-content modal-console">
+            <span class="close-x" onclick="closeModal('devModal')">&times;</span>
+            <div id="devConsole">
+                <div style="color:var(--orange)">[System] DevConsole v1.1.0 (Build 2024) loaded.</div>
+                <div style="color: #777">Connection: Established via GitHub.</div>
+                <div>Введите 'help' для списка команд.</div>
+            </div>
+            <div class="cmd-line">
+                <span class="cmd-prefix">></span>
+                <input type="text" class="cmd-input" placeholder="root@calculator:~#" autofocus>
+            </div>
         </div>
     </div>
 
     <div class="footer-text">calculator.net</div>
 
     <script>
-        const display = document.getElementById('display');
-        const statusLabel = document.getElementById('statusLabel');
-        const devConsole = document.getElementById('devConsole');
-        const cmdInput = document.getElementById('cmdInput');
-        let unlocked = [];
-        let timer;
-        let isAuth = false;
-        let purchaseActive = false;
+        /**
+         * Calculator.net Dev Edition
+         * Основная логика приложения
+         */
+        
+        let currentTier = "none";
+        let displayElement = document.getElementById('display');
+        let sessionLogs = [];
 
-        function log(msg, color = "#fff") {
-            const time = new Date().toLocaleTimeString();
-            devConsole.innerHTML += `<div style="color:${color}">[${time}] ${msg}</div>`;
-            devConsole.scrollTop = devConsole.scrollHeight;
+        // Управление модальными окнами
+        function openModal(modalId) {
+            console.log("Opening modal: " + modalId);
+            document.getElementById(modalId).style.display = 'flex';
         }
 
-        cmdInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                const fullCmd = cmdInput.value.trim().toLowerCase();
-                const parts = fullCmd.split(' ');
-                const cmd = parts[0];
-                const arg1 = parts[1];
-                const arg2 = parts.slice(2).join(' ');
-                
-                log(`> ${cmdInput.value}`, "var(--orange)");
-                cmdInput.value = '';
-
-                if (cmd === 'clear') { devConsole.innerHTML = ''; }
-                else if (cmd === 'help') { log("clear, help, unlock <tier|all>, rickroll, github err <msg>"); }
-                else if (cmd === 'unlock') {
-                    const tiers = ['standart', 'pro', 'super', 'mega'];
-                    if (arg1 === 'all') { tiers.forEach(t => unlockTier(t)); log("All unlocked!", "var(--green)"); }
-                    else if (tiers.includes(arg1)) { unlockTier(arg1); log(`${arg1} unlocked!`, "var(--green)"); }
-                }
-                else if (cmd === 'rickroll') { window.open('https://www.youtube.com', '_blank'); }
-                else if (cmd === 'github' && arg1 === 'err') { window.open(`https://github.com{encodeURIComponent(arg2)}`, '_blank'); }
-            }
-        });
-
-        function unlockTier(t) {
-            if (!unlocked.includes(t)) {
-                unlocked.push(t);
-                document.querySelectorAll(`[data-tier="${t}"]`).forEach(b => b.classList.add('unlocked'));
-                if (t === 'mega') document.getElementById('btn-equal').classList.add('unlocked');
-                statusLabel.innerText = "Тариф: " + t.toUpperCase();
-                const btn = document.getElementById('buy-' + t);
-                if (btn) {
-                    btn.innerText = t.toUpperCase() + " - КУПЛЕНО"; btn.disabled = true;
-                    const next = ['standart', 'pro', 'super', 'mega'][['standart', 'pro', 'super', 'mega'].indexOf(t) + 1];
-                    if (next) document.getElementById('buy-' + next).disabled = false;
-                }
-            }
+        function closeModal(modalId) {
+            console.log("Closing modal: " + modalId);
+            document.getElementById(modalId).style.display = 'none';
         }
 
-        function press(act) {
-            const btn = document.getElementById('btn-' + act);
-            if (!unlocked.includes(btn.getAttribute('data-tier'))) {
-                document.getElementById('calcMain').classList.add('shake');
-                setTimeout(() => document.getElementById('calcMain').classList.remove('shake'), 300);
+        // Логика авторизации
+        function fakeLogin() {
+            const emailValue = document.getElementById('emailInp').value;
+            const passValue = document.getElementById('passInp').value;
+
+            if(!emailValue || !emailValue.includes('@')) {
+                alert('Ошибка: Некорректный адрес электронной почты.');
                 return;
             }
-            if (act === 'C') display.value = "";
-            else if (act === 'del') display.value = display.value.slice(0, -1);
-            else if (act === 'equal') { try { display.value = eval(display.value.replace(/÷/g,'/').replace(/×/g,'*')) || "0"; } catch { display.value = "Error"; } }
-            else { const m = {add:'+', sub:'-', mul:'*', div:'/', dot:'.', perc:'%'}; display.value += m[act] || act; }
+
+            if(passValue.length < 4) {
+                alert('Ошибка: Пароль слишком короткий.');
+                return;
+            }
+            
+            // Скрытие элементов входа и показ профиля
+            document.getElementById('loginBtn').style.display = 'none';
+            document.getElementById('profileBox').style.display = 'block';
+            document.getElementById('devBtn').style.display = 'block';
+            
+            document.getElementById('pEmail').innerText = emailValue;
+            document.getElementById('pName').innerText = emailValue.split('@')[0];
+            
+            closeModal('loginModal');
+            
+            // Стандартный доступ после входа
+            unlockTier('standart');
+            addToLog("User logged in as: " + emailValue);
         }
 
-        function startPurchase(tier, next) {
-            if (!isAuth) { openModal('loginModal'); return; }
-            purchaseActive = true;
-            openModal('procModal');
-            const status = document.getElementById('procStatus');
-            const cancelBtn = document.getElementById('cancelBtn');
-            const finalBtns = document.getElementById('finalBtns');
-            const steps = ["соединение", "отправка запроса на покупку", "получение разрешения"];
-            let idx = 0;
+        // Система разблокировки уровней (Tiers)
+        function unlockTier(tierName) {
+            currentTier = tierName;
+            const label = document.getElementById('statusLabel');
+            label.innerText = "Тариф: " + tierName.toUpperCase();
+            
+            if(tierName === 'mega') label.style.color = 'var(--orange)';
 
-            cancelBtn.style.display = "block";
-            finalBtns.style.display = "none";
+            const allButtons = document.querySelectorAll('.calc-btn');
+            allButtons.forEach(button => {
+                const btnTier = button.getAttribute('data-tier');
+                
+                // Простая логика иерархии тарифов
+                let isAccessible = false;
+                if(tierName === 'mega') isAccessible = true;
+                else if(tierName === 'super' && (btnTier === 'super' || btnTier === 'pro' || btnTier === 'standart')) isAccessible = true;
+                else if(tierName === 'pro' && (btnTier === 'pro' || btnTier === 'standart')) isAccessible = true;
+                else if(tierName === 'standart' && btnTier === 'standart') isAccessible = true;
 
-            function run() {
-                if (!purchaseActive) return;
-                if (Math.random() < 0.05) { fail(); return; }
-                status.innerHTML = `<span class="dots">${steps[idx]}</span>`;
-                if (idx < steps.length - 1) { idx++; timer = setTimeout(run, 1200); }
-                else { timer = setTimeout(progress, 1000); }
-            }
-
-            function progress() {
-                let p = 0;
-                function upd() {
-                    if (!purchaseActive) return;
-                    if (p < 99) { p += Math.floor(Math.random()*15)+1; if(p>99) p=99; status.innerText = `выдача... ${p}%`; timer = setTimeout(upd, 600); }
-                    else { timer = setTimeout(() => { if(!purchaseActive) return; status.innerText="выдача... 100%"; setTimeout(()=>finish(), 800); }, 5000); }
+                if(isAccessible) {
+                    button.classList.add('unlocked');
+                    button.style.opacity = "1";
                 }
-                upd();
+            });
+            addToLog("Tier changed to: " + tierName);
+        }
+
+        // Основной обработчик нажатий калькулятора
+        function press(keyValue) {
+            const targetBtn = event.target;
+            
+            // Если кнопка заблокирована
+            if(!targetBtn.classList.contains('unlocked')) {
+                console.warn("Access denied for key: " + keyValue);
+                targetBtn.classList.add('shake');
+                setTimeout(() => targetBtn.classList.remove('shake'), 300);
+                return;
             }
 
-            function finish() {
-                unlockTier(tier);
-                cancelBtn.style.display="none";
-                finalBtns.style.display="flex";
-                status.innerText = "Готово!";
+            // Выполнение операций
+            if(keyValue === 'C') {
+                displayElement.value = '';
+            } 
+            else if(keyValue === 'del') {
+                displayElement.value = displayElement.value.slice(0, -1);
             }
-            run();
-        }
-
-        function fail() { purchaseActive = false; document.getElementById('procStatus').innerHTML = "<span style='color:var(--red)'>ОШИБКА попробуйте заново</span>"; document.getElementById('cancelBtn').style.display="none"; document.getElementById('finalBtns').style.display="flex"; }
-
-        function cancelPurchase() {
-            purchaseActive = false; clearTimeout(timer);
-            const status = document.getElementById('procStatus');
-            status.innerHTML = "";
-            const lines = ["остановка процесса покупки,", "завершение,", "покупка отменена"];
-            lines.forEach((l, i) => setTimeout(() => { if(!purchaseActive) status.innerHTML += `<div style="color:var(--red)">${l}</div>`; }, i * 400));
-            document.getElementById('cancelBtn').style.display = "none";
-            document.getElementById('finalBtns').style.display = "flex";
-        }
-
-        function handleRegister() {
-            const n = document.getElementById('rName').value, e1 = document.getElementById('rE1').value, e2 = document.getElementById('rE2').value, p1 = document.getElementById('rP1').value, p2 = document.getElementById('rP2').value;
-            if (n && e1 === e2 && p1 === p2) { localStorage.setItem('user', JSON.stringify({n, e:e1, p:p1})); openModal('loginModal'); }
-        }
-
-        function handleLogin() {
-            const n = document.getElementById('lName').value, p = document.getElementById('lPass').value, s = JSON.parse(localStorage.getItem('user'));
-            if (s && s.n === n && s.p === p) {
-                isAuth = true;
-                document.getElementById('loginBtn').style.display = 'none';
-                document.getElementById('profileBox').style.display = 'block';
-                document.getElementById('devBtn').style.display = 'inline-block';
-                document.getElementById('pName').innerText = s.n;
-                document.getElementById('pEmail').innerText = s.e;
-                closeModals();
+            else if(keyValue === 'equal') {
+                performCalculation();
+            }
+            else if(keyValue === 'perc') {
+                displayElement.value = parseFloat(displayElement.value) / 100;
+            }
+            else {
+                if(displayElement.value === '0' || displayElement.value === 'Error') {
+                    displayElement.value = '';
+                }
+                
+                let symbol = keyValue;
+                if(keyValue === 'mul') symbol = '×';
+                if(keyValue === 'div') symbol = '÷';
+                if(keyValue === 'dot') symbol = '.';
+                if(keyValue === 'add') symbol = '+';
+                if(keyValue === 'sub') symbol = '-';
+                
+                displayElement.value += symbol;
             }
         }
 
-        function openModal(id) { if(id!=='procModal'&&id!=='devModal')document.querySelectorAll('.modal').forEach(m=>m.style.display='none'); document.getElementById(id).style.display='flex'; }
-        function closeModals() { document.querySelectorAll('.modal').forEach(m=>m.style.display='none'); }
+        // Функция вычисления (Eval с защитой)
+        function performCalculation() {
+            try {
+                let expression = displayElement.value.replace(/×/g, '*').replace(/÷/g, '/');
+                if(!expression) return;
+                
+                let result = eval(expression);
+                displayElement.value = Number.isInteger(result) ? result : result.toFixed(4);
+                addToLog("Calculation: " + expression + " = " + result);
+            } catch (e) {
+                displayElement.value = 'Error';
+                addToLog("Calculation Error: " + e.message);
+            }
+        }
+
+        // Логика процесса покупки
+        function startBuy(packageName, tierKey) {
+            document.getElementById('tierList').style.display = 'none';
+            const statusIndicator = document.getElementById('procZone');
+            
+            statusIndicator.innerHTML = `Инициализация платежа...<br><span style="font-size:12px; color:#555">Package: ${packageName}</span>`;
+            
+            setTimeout(() => {
+                statusIndicator.innerHTML = `Проверка транзакции через шлюз...<br><span class="dots"></span>`;
+                setTimeout(() => {
+                    statusIndicator.innerHTML = `<span style="color:var(--green); font-weight:bold">ТРАНЗАКЦИЯ ПОДТВЕРЖДЕНА!</span><br>Обновление лицензии...`;
+                    setTimeout(() => {
+                        unlockTier(tierKey);
+                        statusIndicator.innerHTML = `Пакет <b>${packageName}</b> успешно активирован.`;
+                        document.getElementById('finalActions').style.display = 'flex';
+                    }, 1000);
+                }, 2500);
+            }, 1500);
+        }
+
+        // --- МОДУЛЬ КОНСОЛИ РАЗРАБОТЧИКА ---
+        const inputControl = document.querySelector('.cmd-input');
+        const consoleOutput = document.getElementById('devConsole');
+
+        if(inputControl) {
+            inputControl.addEventListener('keydown', function(eventArgs) {
+                if (eventArgs.key === 'Enter') {
+                    const rawInput = this.value.trim();
+                    const cleanCommand = rawInput.toLowerCase();
+                    
+                    // Эхо команды
+                    const echo = document.createElement('div');
+                    echo.innerHTML = `<span style="color:var(--orange)">[guest@dev ~]$</span> ${rawInput}`;
+                    consoleOutput.appendChild(echo);
+
+                    // Роутинг команд
+                    processCommand(cleanCommand);
+
+                    this.value = '';
+                    consoleOutput.scrollTop = consoleOutput.scrollHeight;
+                }
+            });
+        }
+
+        function processCommand(cmd) {
+            switch(cmd) {
+                case 'site':
+                    const repoUrl = "https://github.com";
+                    writeToConsole("Redirecting to source repository...", "var(--green)");
+                    setTimeout(() => { window.open(repoUrl, '_blank'); }, 800);
+                    break;
+                
+                case 'help':
+                    writeToConsole("Доступные системные вызовы:");
+                    writeToConsole(" - site: Открыть GitHub проекта");
+                    writeToConsole(" - unlock_all: Сброс лицензионных ограничений");
+                    writeToConsole(" - status: Текущее состояние системы");
+                    writeToConsole(" - clear: Очистить буфер консоли");
+                    writeToConsole(" - logs: Показать историю операций");
+                    break;
+
+                case 'unlock_all':
+                    unlockTier('mega');
+                    writeToConsole("CRITICAL: License check bypassed. Mode: GOD_MODE", "var(--red)");
+                    break;
+
+                case 'status':
+                    writeToConsole("System Status: Operational");
+                    writeToConsole("User Tier: " + currentTier.toUpperCase());
+                    writeToConsole("Memory Usage: 42MB / 128MB");
+                    break;
+
+                case 'clear':
+                    consoleOutput.innerHTML = '<div style="color:var(--gray)">Console buffer reset.</div>';
+                    break;
+                
+                case 'logs':
+                    writeToConsole("--- Recent Activity ---");
+                    sessionLogs.forEach(l => writeToConsole(l, "#888"));
+                    break;
+
+                case '':
+                    break;
+
+                default:
+                    writeToConsole("Command not recognized: " + cmd, "var(--red)");
+            }
+        }
+
+        function writeToConsole(message, textColor = "white") {
+            const lineNode = document.createElement('div');
+            lineNode.style.color = textColor;
+            lineNode.style.marginTop = "2px";
+            lineNode.innerText = ">> " + message;
+            consoleOutput.appendChild(lineNode);
+        }
+
+        function addToLog(msg) {
+            const time = new Date().toLocaleTimeString();
+            sessionLogs.push(`[${time}] ${msg}`);
+            if(sessionLogs.length > 20) sessionLogs.shift();
+        }
+
+        function toggleAuth() {
+            const head = document.getElementById('authTitle');
+            head.innerText = head.innerText === 'Авторизация' ? 'Регистрация' : 'Авторизация';
+            writeToConsole("Auth mode toggled.");
+        }
+        
+        // Автоматический фокус на дисплей (для красоты)
+        console.log("Calculator.net Core Initialized.");
     </script>
 </body>
 </html>
